@@ -1,6 +1,7 @@
-FROM openjdk:8-jdk
+FROM centos:centos7
 
-RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
+RUN yum update
+RUN yum install -y curl git java-1.8.0-openjdk-devel
 
 ARG user=jenkins
 ARG group=jenkins
@@ -33,8 +34,8 @@ RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
 # Use tini as subreaper in Docker container to adopt zombie processes
 ARG TINI_VERSION=v0.16.1
 COPY tini_pub.gpg ${JENKINS_HOME}/tini_pub.gpg
-RUN curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(dpkg --print-architecture) -o /sbin/tini \
-  && curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-$(dpkg --print-architecture).asc -o /sbin/tini.asc \
+RUN curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64 -o /sbin/tini \
+  && curl -fsSL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64.asc -o /sbin/tini.asc \
   && gpg --import ${JENKINS_HOME}/tini_pub.gpg \
   && gpg --verify /sbin/tini.asc \
   && rm -rf /sbin/tini.asc /root/.gnupg \
